@@ -462,6 +462,10 @@ export class GqlEntityController {
       return `DECIMAL(${decimalType.p}, ${decimalType.d})`;
     }
 
+    if (type instanceof GraphQLScalarType && type.name === 'Array') {
+      return 'VARCHAR(512)';
+    }
+
     if (type instanceof GraphQLList) {
       return 'JSON';
     }
