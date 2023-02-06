@@ -85,11 +85,6 @@ export class StarknetProvider extends BaseProvider {
         const handler = globalEventHandlers[event.keys[0]];
         if (!handler) continue;
 
-        this.log.info(
-          { contract: event.from_address, event: handler.name, handlerFn: handler.fn },
-          'found contract event'
-        );
-
         await this.instance.writer[handler.fn]({
           block,
           tx,
