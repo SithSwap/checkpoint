@@ -30,12 +30,6 @@ export class StarknetProvider extends BaseProvider {
         throw new Error('invalid block');
       }
     } catch (e) {
-      if ((e as Error).message.includes('StarknetErrorCode.BLOCK_NOT_FOUND')) {
-        this.log.info({ blockNumber: blockNum }, 'block not found');
-      } else {
-        this.log.error({ blockNumber: blockNum, err: e }, 'getting block failed... retrying');
-      }
-
       throw e;
     }
 
