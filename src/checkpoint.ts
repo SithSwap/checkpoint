@@ -43,8 +43,6 @@ export default class Checkpoint {
     this.opts = opts;
     this.schema = this.extendSchema(schema);
 
-    this.validateConfig();
-
     this.entityController = new GqlEntityController(this.schema, opts);
 
     this.sourceContracts = getContractsFromConfig(config);
@@ -55,10 +53,10 @@ export default class Checkpoint {
       level: opts?.logLevel || LogLevel.Error,
       ...(opts?.prettifyLogs
         ? {
-            transport: {
-              target: 'pino-pretty'
-            }
+          transport: {
+            target: 'pino-pretty'
           }
+        }
         : {})
     });
 
