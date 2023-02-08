@@ -21,7 +21,7 @@ import {
   isListType,
   Source
 } from 'graphql';
-import pluralize from 'pluralize';
+import { pluralize, checkPluralS } from 'pluralize';
 import { AsyncMySqlPool } from '../mysql';
 import {
   generateQueryForEntity,
@@ -200,10 +200,11 @@ export class GqlEntityController {
 
     let sql = '';
     this.schemaObjects.forEach(type => {
-      const tableName = pluralize(pluralize(type.name.toLowerCase()));
+      const tableName = pluralize(type.name.toLowerCase());
+      let pluralName = checkPluralS(tableName);
 
-      sql += `\n\nDROP TABLE IF EXISTS ${tableName};`;
-      sql += `\nCREATE TABLE ${tableName} (`;
+      sql += `\n\nDROP TABLE IF EXISTS ${pluralName};`;
+      sql += `\nCREATE TABLE ${pluralName} (`;
       let sqlIndexes = ``;
 
       this.getTypeFields(type).forEach(field => {

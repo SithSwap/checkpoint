@@ -8,7 +8,7 @@ import {
 } from 'graphql';
 import { jsonToGraphQLQuery } from 'json-to-graphql-query';
 import pluralize from 'pluralize';
-
+import { checkPluralS } from './database';
 /**
  * Returns name of query for fetching single entity record
  *
@@ -22,7 +22,8 @@ export const singleEntityQueryName = (entity: GraphQLObjectType) => entity.name.
 export const multiEntityQueryName = (entity: GraphQLObjectType) => {
   if (entity.name === '_Metadata') return '_metadatas';
 
-  return pluralize(entity.name.toLowerCase());
+  const queryName = pluralize(entity.name.toLowerCase())
+  return checkPluralS(queryName);
 };
 
 /**

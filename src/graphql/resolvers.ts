@@ -13,7 +13,7 @@ import {
 } from 'graphql-parse-resolve-info';
 import { AsyncMySqlPool } from '../mysql';
 import { getNonNullType } from '../utils/graphql';
-import { getTableName } from '../utils/database';
+import { getTableName, checkPluralS } from '../utils/database';
 import { Logger } from '../utils/logger';
 import type DataLoader from 'dataloader';
 
@@ -75,9 +75,9 @@ export async function queryMulti(parent, args, context: ResolverContext, info) {
 
   params.push(skip, first);
 
-  const query = `SELECT * FROM ${getTableName(
-    returnType.name.toLowerCase()
-  )} ${whereSql} ${orderBySql} LIMIT ?, ?`;
+  let pluralName = checkPluralS(getTableName(returnType.name.toLowerCase()));
+
+  const query = `SELECT * FROM ${pluralName} ${whereSql} ${orderBySql} LIMIT ?, ?`;
   log.debug({ sql: query, args }, 'executing multi query');
 
   const result = await mysql.queryAsync(query, params);
@@ -105,7 +105,8 @@ export async function querySingle(
     }
   }
 
-  const items = await context.getLoader(returnType.name.toLowerCase()).load(id);
+  let pluralName = checkPluralS(getTableName(returnType.name.toLowerCase()));
+  const items = await context.getLoader(pluralName).load(id);
   if (items.length === 0) {
     throw new Error(`Row not found: ${id}`);
   }

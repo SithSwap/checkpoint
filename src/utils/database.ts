@@ -5,3 +5,10 @@ export const getTableName = (name: string) => {
 
   return pluralize(name);
 };
+
+export const checkPluralS = (name: string) => {
+  if (name[name.length - 1] === 's') {
+    return name;
+  }
+  return name + 's';
+};
