@@ -51,13 +51,6 @@ export default class Checkpoint {
     this.log = createLogger({
       base: { component: 'checkpoint' },
       level: opts?.logLevel || LogLevel.Error,
-      ...(opts?.prettifyLogs
-        ? {
-          transport: {
-            target: 'pino-pretty'
-          }
-        }
-        : {})
     });
 
     const NetworkProvider = opts?.NetworkProvider || StarknetProvider;
