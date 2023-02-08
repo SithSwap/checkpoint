@@ -21,7 +21,8 @@ import {
   isListType,
   Source
 } from 'graphql';
-import { pluralize, checkPluralS } from 'pluralize';
+import pluralize from 'pluralize';
+import { checkPluralS } from '../utils/database';
 import { AsyncMySqlPool } from '../mysql';
 import {
   generateQueryForEntity,
