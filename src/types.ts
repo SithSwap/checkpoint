@@ -11,7 +11,7 @@ export type Event = RPC.GetEventsResponse['events'][number];
 
 // (Partially) narrowed types as real types are not exported from `starknet`.
 export type FullBlock = Block & { block_number: number };
-export type DeployTransaction = Transaction & { contract_address: string };
+export type DeployTransaction = Transaction & { transaction_hash: string };
 
 export type EventsMap = { [key: string]: Event[] };
 export type ParsedEvent = Record<string, any>;
@@ -46,6 +46,8 @@ export interface ContractEventConfig {
 export interface ContractSourceConfig {
   // contract address
   contract: string;
+  // contract deployment tx
+  tx_hash: string;
   // abi name
   abi?: string;
   // start block number

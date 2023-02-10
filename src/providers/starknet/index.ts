@@ -54,7 +54,6 @@ export class StarknetProvider extends BaseProvider {
   }
 
   private async handleTx(block: FullBlock, txIndex: number, tx: Transaction, events: Event[]) {
-    this.log.debug({ txIndex }, 'handling transaction');
 
     const writerParams = this.instance.getWriterParams();
 
@@ -66,37 +65,15 @@ export class StarknetProvider extends BaseProvider {
       });
     }
 
-    if (this.instance.config.global_events) {
-      const globalEventHandlers = this.instance.config.global_events.reduce((handlers, event) => {
-        handlers[`0x${hash.starknetKeccak(event.name).toString('hex')}`] = {
-          name: event.name,
-          fn: event.fn
-        };
-        return handlers;
-      }, {});
-
-      for (const [eventIndex, event] of events.entries()) {
-        const handler = globalEventHandlers[event.keys[0]];
-        if (!handler) continue;
-
-        await this.instance.writer[handler.fn]({
-          block,
-          tx,
-          rawEvent: event,
-          eventIndex,
-          ...writerParams
-        });
-      }
-    }
 
     for (const source of this.instance.config.sources || []) {
       let foundContractData = false;
       const contract = validateAndParseAddress(source.contract);
+      const tx_hash = validateAndParseAddress(source.tx_hash);
 
-      if (
-        isDeployTransaction(tx) &&
-        source.deploy_fn &&
-        contract === validateAndParseAddress(tx.contract_address)
+      if (source.deploy_fn &&
+        tx.transaction_hash != undefined &&
+        tx_hash === validateAndParseAddress(tx.transaction_hash)
       ) {
         foundContractData = true;
         this.log.info(
@@ -152,6 +129,29 @@ export class StarknetProvider extends BaseProvider {
         }
       }
 
+      if (this.instance.config.global_events) {
+        const globalEventHandlers = this.instance.config.global_events.reduce((handlers, event) => {
+          handlers[`0x${hash.starknetKeccak(event.name).toString('hex')}`] = {
+            name: event.name,
+            fn: event.fn
+          };
+          return handlers;
+        }, {});
+
+        for (const [eventIndex, event] of events.entries()) {
+          const handler = globalEventHandlers[event.keys[0]];
+          if (!handler) continue;
+
+          await this.instance.writer[handler.fn]({
+            block,
+            tx,
+            rawEvent: event,
+            eventIndex,
+            ...writerParams
+          });
+        }
+      }
+
       if (foundContractData) {
         await this.instance.insertCheckpoints([
           { blockNumber: block.block_number, contractAddress: source.contract }
@@ -159,7 +159,6 @@ export class StarknetProvider extends BaseProvider {
       }
     }
 
-    this.log.debug({ txIndex }, 'handling transaction done');
   }
 
   private async getEvents(blockNumber: number): Promise<EventsMap> {
