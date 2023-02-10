@@ -142,7 +142,7 @@ export default class Checkpoint {
     this.cpBlocksCache = [];
   }
 
-  public executeTemplate(name: string, { contract, start }: { contract: string; start: number }) {
+  public executeTemplate(name: string, { contract, start, tx_hash }: { contract: string; start: number; tx_hash: string }) {
     const template = this.config.templates?.[name];
 
     if (!template) {
@@ -152,6 +152,7 @@ export default class Checkpoint {
 
     this.addSource({
       contract,
+      tx_hash,
       start,
       abi: template.abi,
       events: template.events
