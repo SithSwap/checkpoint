@@ -174,7 +174,10 @@ export class StarknetProvider extends BaseProvider {
       });
 
       events.push(...result.events);
-
+      if (events.length == 0) {
+        this.log.info({ blockNumber: blockNumber }, 'No event found retrying');
+        throw new Error('invalid block');
+      }
       continuationToken = result.continuation_token;
     } while (continuationToken);
 
