@@ -174,13 +174,11 @@ export class StarknetProvider extends BaseProvider {
       });
 
       events.push(...result.events);
-      if (events.length == 0) {
-        this.log.info({ blockNumber: blockNumber }, 'No event found retrying');
-        throw new Error('invalid block');
-      }
       continuationToken = result.continuation_token;
     } while (continuationToken);
-
+    if (events.length == 0) {
+      throw new Error('invalid block');
+    }
     return events.reduce((acc, event) => {
       if (!acc[event.transaction_hash]) acc[event.transaction_hash] = [];
 
