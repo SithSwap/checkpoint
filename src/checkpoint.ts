@@ -229,6 +229,10 @@ export default class Checkpoint {
 
       return this.next(blockNum + 1);
     } catch (err) {
+      let error = err as Error;
+      if (error && error.message && !(error?.message?.includes('invalid block') || error?.message?.includes('Block not found'))) {
+        console.log("error", error)
+      }
       await Promise.delay(60e3);
       return this.next(blockNum);
     }
